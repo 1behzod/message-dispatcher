@@ -12,7 +12,7 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query(value = """
-            SELECT * FROM messages
+            SELECT * FROM message
             WHERE status = 'NEW'
               AND (locked_at IS NULL OR locked_at < NOW() - INTERVAL '2 minutes')
             ORDER BY id

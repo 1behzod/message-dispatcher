@@ -13,7 +13,7 @@ public class MessageSenderJob {
 
     private final MessageService messageService;
 
- //   @Scheduled(fixedDelayString = "${scheduling.fixed-delay-ms:30000}")
+    @Scheduled(fixedDelayString = "${scheduling.fixed-delay-ms:30000}")
     public void process() {
         log.info("MessageSenderJob triggered");
         messageService.processNextBatch();

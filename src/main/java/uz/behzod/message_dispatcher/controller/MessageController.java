@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.behzod.message_dispatcher.service.MessageService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class MessageController {
     MessageService messageService;
 
     @PostMapping("/generate")
-    public ResponseEntity<Void> generate(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<Void> generate(@RequestHeader("X-User-Id") UUID userId) {
         messageService.generate(userId);
         return ResponseEntity.ok().build();
     }

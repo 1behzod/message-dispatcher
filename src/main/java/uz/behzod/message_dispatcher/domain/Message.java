@@ -1,6 +1,10 @@
 package uz.behzod.message_dispatcher.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +28,6 @@ public class Message extends BaseEntity {
 
     @Column(name = "app_id")
     String appId;
-
-    @Column(name = "retry_count")
-    int retryCount = 0;
 
     @Column(name = "locked_at")
     Instant lockedAt;
