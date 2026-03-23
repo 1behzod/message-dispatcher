@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: message-generator
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/msggen
+    username: postgres
+    password: secret
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+    drop-first: false
+    contexts: default
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 10000
+    listener:
+      simple:
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  instance-id: ${INSTANCE_ID:node-1}
+  message:
+    app-id: test
+    target-url: https://test/post
+    batch-size: 10
+    lock-timeout-minutes: 2
+    max-retries: 3
+  rabbit:
+    exchange: user.events
+    routing-key:
+      full-name: user.fullname.changed
+      password: user.password.changed
+
+scheduling:
+  fixed-delay-ms: 30000

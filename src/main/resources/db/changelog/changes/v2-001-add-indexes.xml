@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v2-001-add-index-messages-status" author="behzod">
+        <createIndex tableName="message"
+                     indexName="idx_message_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2-002-add-index-messages-locked-at" author="behzod">
+        <createIndex tableName="message"
+                     indexName="idx_message_locked_at">
+            <column name="locked_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2-003-add-index-messages-status-locked-at" author="behzod">
+        <createIndex tableName="message"
+                     indexName="idx_message_status_locked_at">
+            <column name="status"/>
+            <column name="locked_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2-004-add-index-messages-app-id" author="behzod">
+        <createIndex tableName="message"
+                     indexName="idx_message_app_id">
+            <column name="app_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2-005-add-index-users-login" author="behzod">
+        <createIndex tableName="users"
+                     indexName="idx_users_login">
+            <column name="login"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

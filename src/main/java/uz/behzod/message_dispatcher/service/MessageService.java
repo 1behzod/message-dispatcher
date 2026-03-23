@@ -1,14 +1,12 @@
 package uz.behzod.message_dispatcher.service;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Value;
-import lombok.experimental.FieldDefaults;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import uz.behzod.message_dispatcher.config.AppProperties;
 import uz.behzod.message_dispatcher.domain.Message;
 import uz.behzod.message_dispatcher.enums.MessageStatus;
 import uz.behzod.message_dispatcher.repository.MessageRepository;
@@ -21,26 +19,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 
 @Service
-@AllArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class MessageService {
-    private final MessageRepository messageRepo;
+    private final MessageRepository messageRepository;
     private final ExecutorService messageSenderThreadPool;
     private final RestTemplate restTemplate;
-
-    @Value("${app.instance-id}")
-    private String appId;
-
-    @Value("${app.message.target-url}")
-    private String targetUrl;
-
-    @Value("${app.message.batch-size:10}")
-    private int batchSize;
-
-    @Value("${app.message.max-retries:3}")
-    private int maxRetries;
+    private final AppProperties appProperties;
 
     // ── Called by the job ──────────────────────────────────────────────────
 
@@ -69,11 +55,11 @@ public class MessageService {
 
     @Transactional
     public List<Message> fetchAndLock() {
-        List<Message> batch = messageRepo.findAndLockPending(batchSize);
+        List<Message> batch = messageRepository.findAndLockPending(appProperties.getMessage().getBatchSize());
         if (!batch.isEmpty()) {
             Instant now = Instant.now();
             batch.forEach(m -> m.setLockedAt(now));
-            messageRepo.saveAll(batch);
+            messageRepository.saveAll(batch);
         }
         return batch;
     }
@@ -81,6 +67,7 @@ public class MessageService {
     // ── Send with retry (each message its own transaction) ────────────────
 
     public void send(Message message) {
+        int maxRetries = appProperties.getMessage().getMaxRetries();
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 restTemplate.postForEntity(
@@ -108,7 +95,7 @@ public class MessageService {
         message.setStatus(MessageStatus.SENT);
         message.setLockedAt(null);
         message.setRetryCount(message.getRetryCount() + 1);
-        messageRepo.save(message);
+        messageRepository.save(message);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -116,7 +103,7 @@ public class MessageService {
         message.setStatus(MessageStatus.FAILED);
         message.setLockedAt(null);
         message.setRetryCount(message.getRetryCount() + 1);
-        messageRepo.save(message);
+        messageRepository.save(message);
     }
 
     // ── Generate 1000 messages ─────────────────────────────────────────────
@@ -124,15 +111,15 @@ public class MessageService {
     @Transactional
     public void generate(Long userId) {
         List<Message> messages = IntStream.rangeClosed(1, 1000)
-                .mapToObj(i -> {
-                    Message m = new Message();
-                    m.setName("Message " + i);
-                    m.setStatus(MessageStatus.NEW);
-                    m.setUrl(targetUrl);
-                    m.setAppId(appId);
-                    return m;
+                .mapToObj(number -> {
+                    Message message = new Message();
+                    message.setName("Message " + number);
+                    message.setStatus(MessageStatus.NEW);
+                    message.setUrl(appProperties.getMessage().getTargetUrl());
+                    message.setAppId(appProperties.getMessage().getAppId());
+                    return message;
                 }).toList();
-        messageRepo.saveAll(messages);
+        messageRepository.saveAll(messages);
         log.info("Generated 1000 messages for user {}", userId);
     }
 }

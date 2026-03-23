@@ -13,6 +13,8 @@ import uz.behzod.message_dispatcher.dto.user.LoginDTO;
 import uz.behzod.message_dispatcher.dto.user.RegisterDTO;
 import uz.behzod.message_dispatcher.repository.UserRepository;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 @Transactional(readOnly = true)
@@ -22,9 +24,11 @@ public class AuthService {
     UserRepository userRepository;
     PasswordEncoder encoder;
 
+    @Transactional
     public void register(RegisterDTO registerDTO) {
-        if (userRepository.findByLogin(registerDTO.login()).isPresent())
+        if (userRepository.findByLogin(registerDTO.login()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Login already taken");
+        }
         User user = new User();
         user.setLogin(registerDTO.login());
         user.setPassword(encoder.encode(registerDTO.password()));
@@ -32,11 +36,11 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public Long login(LoginDTO loginDTO) {
-        User user = userRepository.findByLogin(loginDTO.login())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        if (!encoder.matches(loginDTO.password(), user.getPassword()))
+    public UUID login(LoginDTO loginDTO) {
+        User user = userRepository.findByLogin(loginDTO.login()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!encoder.matches(loginDTO.password(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return user.getId();
     }
 }

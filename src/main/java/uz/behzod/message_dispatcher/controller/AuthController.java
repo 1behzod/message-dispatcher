@@ -13,6 +13,7 @@ import uz.behzod.message_dispatcher.dto.user.RegisterDTO;
 import uz.behzod.message_dispatcher.service.AuthService;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Long>> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<Map<String, UUID>> login(@RequestBody LoginDTO loginDTO) {
         return ResponseEntity.ok(Map.of("userId", authService.login(loginDTO)));
     }
 }
