@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import uz.behzod.message_dispatcher.domain.User;
-import uz.behzod.message_dispatcher.dto.user.LoginDTO;
-import uz.behzod.message_dispatcher.dto.user.RegisterDTO;
+import uz.behzod.message_dispatcher.dto.auth.ChangePasswordDTO;
+import uz.behzod.message_dispatcher.dto.auth.LoginDTO;
+import uz.behzod.message_dispatcher.dto.auth.RegisterDTO;
+import uz.behzod.message_dispatcher.dto.payload.UpdateUserPayload;
+import uz.behzod.message_dispatcher.rabbitmq.producer.RabbitMqUpdateUserProducer;
 import uz.behzod.message_dispatcher.repository.UserRepository;
 
 import java.util.UUID;
@@ -23,6 +26,7 @@ public class AuthService {
 
     UserRepository userRepository;
     PasswordEncoder encoder;
+    RabbitMqUpdateUserProducer producer;
 
     @Transactional
     public void register(RegisterDTO registerDTO) {
@@ -42,5 +46,20 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         return user.getId();
+    }
+
+    @Transactional
+    public void changePassword(UUID id, ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!encoder.matches(changePasswordDTO.currentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Current password is incorrect");
+        }
+        UpdateUserPayload payload = new UpdateUserPayload();
+        payload.setOld(changePasswordDTO.currentPassword());
+        payload.setUpdated(changePasswordDTO.newPassword());
+        user.setPassword(encoder.encode(changePasswordDTO.newPassword()));
+        userRepository.save(user);
+        producer.changePassword(payload);
     }
 }
