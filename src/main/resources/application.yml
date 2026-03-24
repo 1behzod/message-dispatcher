@@ -63,7 +63,7 @@ app:
   message:
     app-id: test
     target-url: https://httpbin.org/post
-    batch-size: 100
+    batch-size: 10
     lock-timeout-minutes: 2
     max-retries: 3
   rabbit:
