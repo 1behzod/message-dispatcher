@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class RabbitMqBaseProducer {
 
-    String X_DELAY = "x-delay";
-    String TYPE_ID = "__TypeId__";
-    String AUTHORIZATION = "Authorization";
-    String DELAY_EXCHANGE_NAME = "delayedExchange";
+    private static final String X_DELAY = "x-delay";
+    private static final String TYPE_ID = "__TypeId__";
+    //   private static final String AUTHORIZATION = "Authorization";
+    private static final String DELAY_EXCHANGE_NAME = "delayedExchange";
 
     @Autowired
     protected RabbitTemplate rabbitTemplate;
@@ -41,7 +41,7 @@ public class RabbitMqBaseProducer {
                                     .setContentType(MediaType.APPLICATION_JSON_VALUE)
                                     .setHeader(X_DELAY, (1000 * delay))
                                     .setHeader(TYPE_ID, payload)
-                                    .setHeader(AUTHORIZATION, SecurityContextHolder.getContext().getAuthentication() != null ? SecurityContextHolder.getContext().getAuthentication().getCredentials() : null)
+//                                    .setHeader(AUTHORIZATION, SecurityContextHolder.getContext().getAuthentication() != null ? SecurityContextHolder.getContext().getAuthentication().getCredentials() : null)
                                     .build()
                     )
                     .build();

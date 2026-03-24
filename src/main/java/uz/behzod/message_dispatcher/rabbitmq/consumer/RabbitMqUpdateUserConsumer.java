@@ -35,7 +35,7 @@ public class RabbitMqUpdateUserConsumer {
                     exchange = @Exchange(durable = "false", value = "delayedExchange", delayed = "true"),
                     key = "CHANGE_USER_PASSWORD_QUEUE"
             ),
-            containerFactory = "rabbitListenerContainerFactoryMin"
+            containerFactory = "rabbitListenerContainerFactoryMax"
     )
     public void changePassword(UpdateUserPayload payload) {
         try {

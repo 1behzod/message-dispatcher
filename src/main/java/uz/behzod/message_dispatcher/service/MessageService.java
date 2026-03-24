@@ -31,6 +31,7 @@ public class MessageService {
     private final MessageStatusService messageStatusService;
 
 
+    @Transactional
     public void processNextBatch() {
         List<Message> batch = fetchAndLock();
         if (batch.isEmpty()) {
