@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import uz.behzod.message_dispatcher.dto.payload.UpdateUserPayload;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,6 +77,8 @@ public class RabbitMQConfig {
         DefaultClassMapper classMapper = new DefaultClassMapper();
         Map<String, Class<?>> idClassMapping = new HashMap<>();
         idClassMapping.put("map", HashMap.class);
+        idClassMapping.put("CHANGE_USER_PASSWORD_PAYLOAD", UpdateUserPayload.class);
+        idClassMapping.put("UPDATE_USER_NAME_PAYLOAD", UpdateUserPayload.class);
         classMapper.setIdClassMapping(idClassMapping);
         classMapper.setTrustedPackages("*");
         return classMapper;

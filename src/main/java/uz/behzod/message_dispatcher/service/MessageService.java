@@ -31,7 +31,6 @@ public class MessageService {
     private final MessageStatusService messageStatusService;
 
 
-    @Transactional
     public void processNextBatch() {
         List<Message> batch = fetchAndLock();
         if (batch.isEmpty()) {
@@ -65,7 +64,6 @@ public class MessageService {
         return batch;
     }
 
-    @Transactional
     public void send(Message message) {
         int maxRetries = appProperties.getMessage().getMaxRetries();
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
