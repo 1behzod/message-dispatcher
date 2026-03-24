@@ -24,7 +24,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- Spring Boot Starters -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -49,15 +48,11 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
-
-		<!-- Database -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
-		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -75,8 +70,6 @@
 			<artifactId>httpclient5</artifactId>
 			<version>5.3.1</version>
 		</dependency>
-
-		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -91,7 +84,6 @@
 
 	<build>
 		<plugins>
-			<!-- Maven Compiler Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -107,8 +99,6 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-
-			<!-- Spring Boot Maven Plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
