@@ -20,7 +20,7 @@ public class AppProperties {
         private String targetUrl;
         private int batchSize;
         private int maxRetries;
-        private int lockTimeoutMinutes = 2;
+        private int lockTimeoutMinutes;
     }
 
 }
